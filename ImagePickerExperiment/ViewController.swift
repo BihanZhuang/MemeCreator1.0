@@ -28,6 +28,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     @IBOutlet weak var cameraButton: UIBarButtonItem!
     @IBOutlet weak var topTextField: UITextField!
     @IBOutlet weak var bottomTextField: UITextField!
+    @IBOutlet weak var shareButton: UIBarButtonItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,6 +45,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
+        shareButton.isEnabled = false
         subscribeToKeyboardNotifications()
     }
     
@@ -98,6 +100,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
             bottomTextField.text = "BOTTOM"
             topTextField.isHidden = false
             bottomTextField.isHidden = false
+            shareButton.isEnabled = true
         }
         dismiss(animated: true, completion: nil)
     }
@@ -129,6 +132,18 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         let memedImage = generateMemedImage()
         let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imagePickerView.image!, memedImage: memedImage)
         imagePickerView.image = memedImage
+    }
+    
+    @IBAction func shareMeme(_ sender: Any) {
+        let memedImage = generateMemedImage()
+        let activityController = UIActivityViewController(activityItems: [memedImage], applicationActivities: nil)
+        activityController.completionWithItemsHandler = {(completed: Bool) in
+            if completed {
+                self.save()
+                return
+            }
+        }
+        present(activityController, animated: true, completion: nil)
     }
 }
 
